@@ -29,6 +29,72 @@ public class SerializeandDeserializeBinaryTree {
      * @return
      */
     // Encodes a tree to a single string.
+    
+    solution 1: take advantage of feature of BFS
+    /**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+    private final static char SP=',';
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb= new StringBuilder();
+        if(root == null) return "";
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while(!stack.isEmpty()){
+            TreeNode curr = stack.pop();
+            sb.append(curr.val).append(SP);
+            if(curr.right!=null) stack.push(curr.right);
+            if(curr.left !=null) stack.push(curr.left);
+            
+        }
+        
+        sb.deleteCharAt(sb.length()-1);
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data == null || data.length() == 0) return null;
+        String array[] = data.split("\\" + SP);
+        Queue<Integer> queue = new LinkedList<>();
+        for(String val: array){
+            queue.add(Integer.valueOf(val));
+        }
+        
+        return deserializeHelper(queue);
+    }
+    
+    public TreeNode deserializeHelper(Queue<Integer> queue){
+        if(queue.isEmpty()) return null;
+        Integer curr = queue.remove();
+    
+        Queue<Integer> smallerQueue = new LinkedList<>();
+        while(!queue.isEmpty() && queue.peek() < curr){
+            smallerQueue.add(queue.remove());
+        }
+        
+        TreeNode root = new TreeNode(curr);
+        root.left = deserializeHelper(smallerQueue);
+        root.right = deserializeHelper(queue);
+        
+        return root;
+        
+    }
+}
+
+solution 2: implemented as  nomral bt 
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));    
+        
     public String serialize(TreeNode root) {
        if (root == null) return "";
        StringBuilder res = new StringBuilder();
